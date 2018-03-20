@@ -25,10 +25,6 @@ from keras.preprocessing.image import ImageDataGenerator
 import tensorflow as tf
 from sklearn.model_selection  import GridSearchCV
 
-# config = tf.ConfigProto()
-# config.gpu_options.allow_growth = True
-# sess = tf.Session(config=config)
-
 print('generatin aux functions')
 def data_train_extraction(folder_train):
     labels = [x[0].split('/')[-1] for x in os.walk(folder_train)][1:]
@@ -173,74 +169,70 @@ y_one_hot_test = label_binarizer.fit_transform(y_test)
 
 print('Start model training and evaluation')
 
-#
-# model = Sequential()
-#
-# model.add(Convolution2D(16, 4, 4, input_shape=(32, 32, 3), activation="relu"))
-# model.add(MaxPooling2D((2, 2)))
-# # model.add(Dropout(0.25))
-#
-# model.add(Convolution2D(32, 4, 4, activation="relu"))
-# model.add(MaxPooling2D((2, 2)))
-# # model.add(Dropout(0.5))
-#
-# # model.add(Convolution2D(128, 4, 4, activation="relu"))
-# # model.add(MaxPooling2D((2, 2)))
-# # model.add(Dropout(0.5))
-#
-# model.add(Flatten())
-#
-# model.add(Dense(256, activation="relu"))
-# # model.add(Dropout(0.25))
-#
-# model.add(Dense(12, activation="softmax"))
-#
-# BATCH_SIZE = 128
-# EPOCHS = 10
-# model.compile('adam', 'categorical_crossentropy', ['accuracy'])
-# gen = ImageDataGenerator(
-#             rotation_range=360.,
-#             width_shift_range=0.2,
-#             height_shift_range=0.2,
-#             zoom_range=0,
-#             horizontal_flip=True,
-#             vertical_flip=True
-#     )
-#
-# earlyStopping=keras.callbacks.EarlyStopping(monitor='acc', patience=4, verbose=1, mode='auto')
-#
-# model.fit_generator(gen.flow(X_normalized, y_one_hot,batch_size=BATCH_SIZE),
-#                steps_per_epoch=100,
-#                epochs=EPOCHS,
-#                verbose=1,
-#                shuffle=True,
-#                     callbacks=[earlyStopping],
-#                validation_data=(X_normalized_test, y_one_hot_test))
-#
-#
-# history = model.fit(X_normalized,
-#                     y_one_hot,
-#                     steps_per_epoch=20,
-#                     epochs=10,
-#                     verbose=1,
-#                     callbacks=[earlyStopping]
-#                    )
-#
-# preds = model.predict(X_normalized_test)
-# predictions = label_binarizer.inverse_transform(preds)
-# f1_s = round(f1_score(y_test, predictions, average='micro'),4)
-#
-# model_name = 'modelo_{}'.format(str(f1_s))
-# model.save_weights('weights/{}.h5'.format(model_name))
-# model.save('models/{}.h5'.format(model_name))
 
-model_name = 'modelo_0.8063'
+model = Sequential()
+
+model.add(Convolution2D(16, 4, 4, input_shape=(32, 32, 3), activation="relu"))
+model.add(MaxPooling2D((2, 2)))
+# model.add(Dropout(0.25))
+
+model.add(Convolution2D(32, 4, 4, activation="relu"))
+model.add(MaxPooling2D((2, 2)))
+# model.add(Dropout(0.5))
+
+# model.add(Convolution2D(128, 4, 4, activation="relu"))
+# model.add(MaxPooling2D((2, 2)))
+# model.add(Dropout(0.5))
+
+model.add(Flatten())
+
+model.add(Dense(256, activation="relu"))
+# model.add(Dropout(0.25))
+
+model.add(Dense(12, activation="softmax"))
+
+BATCH_SIZE = 128
+EPOCHS = 10
+model.compile('adam', 'categorical_crossentropy', ['accuracy'])
+gen = ImageDataGenerator(
+            rotation_range=360.,
+            width_shift_range=0.2,
+            height_shift_range=0.2,
+            zoom_range=0,
+            horizontal_flip=True,
+            vertical_flip=True
+    )
+
+earlyStopping=keras.callbacks.EarlyStopping(monitor='acc', patience=4, verbose=1, mode='auto')
+
+model.fit_generator(gen.flow(X_normalized, y_one_hot,batch_size=BATCH_SIZE),
+               steps_per_epoch=100,
+               epochs=EPOCHS,
+               verbose=1,
+               shuffle=True,
+                    callbacks=[earlyStopping],
+               validation_data=(X_normalized_test, y_one_hot_test))
+
+
+history = model.fit(X_normalized,
+                    y_one_hot,
+                    steps_per_epoch=20,
+                    epochs=10,
+                    verbose=1,
+                    callbacks=[earlyStopping]
+                   )
+
+preds = model.predict(X_normalized_test)
+predictions = label_binarizer.inverse_transform(preds)
+f1_s = round(f1_score(y_test, predictions, average='micro'),4)
+
+model_name = 'modelo_{}'.format(str(f1_s))
+model.save_weights('weights/{}.h5'.format(model_name))
+model.save('models/{}.h5'.format(model_name))
+
 model_load = load_model('models/{}.h5'.format(model_name))
 model_load.load_weights('weights/{}.h5'.format(model_name))
 test_score = model_load.evaluate(X_normalized_test, y_one_hot_test)
-preds = model_load.predict(X_normalized_test)
-predictions = label_binarizer.inverse_transform(preds)
-f1_s = round(f1_score(y_test, predictions, average='micro'),4)
-print(f1_s)
+print(test_score)
 
 # submit(model_load, test_normalized, 'f1s_{}.csv'.format(str(f1_s)))
