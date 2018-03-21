@@ -161,7 +161,7 @@ class Model(object):
         if not os.path.isfile('data/images_test.npz'):
             images_test = [self.image_edit0(path, 32) for path in df_test['path']]
             np.savez("data/images_test", images_test)
-            array_train = np.asarray(images_train)
+            array_test = np.asarray(images_train)
         else:
             images_test = np.load("data/images_test.npz")
             array_test = np.asarray(images_test['arr_0'])
@@ -222,21 +222,22 @@ if __name__ == '__main__':
         horizontal_flip=True,
         vertical_flip=True
     )
-    model.fit_generator(gen.flow(X_normalized, y_one_hot, batch_size=BATCH_SIZE),
-                        steps_per_epoch=250,
-                        epochs=EPOCHS,
-                        verbose=1,
-                        shuffle=True,
-                        validation_data=(X_normalized_test, y_one_hot_test))
+    # model.fit_generator(gen.flow(X_normalized, y_one_hot, batch_size=BATCH_SIZE),
+    #                     steps_per_epoch=250,
+    #                     epochs=EPOCHS,
+    #                     verbose=1,
+    #                     # shuffle=True,
+    #                     validation_data=(X_normalized_test, y_one_hot_test))
 
     earlyStopping = keras.callbacks.EarlyStopping(monitor='acc', patience=4, verbose=1, mode='auto')
 
     history = model.fit(X_normalized,
                         y_one_hot,
-                        steps_per_epoch=100,
+                        # steps_per_epoch=100,
                         epochs=80,
                         verbose=1,
                         callbacks=[earlyStopping],
+                        batch_size=BATCH_SIZE
                         )
 
     preds = model.predict(X_normalized_test)

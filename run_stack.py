@@ -30,12 +30,13 @@ class stack_nn(object):
     def __init__(self):
         rfuncs = Model()
 
-        self.m1 = rfuncs.load_m('modelo_0.8716')
+        # self.m1 = rfuncs.load_m('modelo_0.8716')
         self.m2 = rfuncs.load_m('modelo_0.8674')
         self.m2 = rfuncs.load_m('modelo_0.7716')
         self.m2 = rfuncs.load_m('modelo_0.7021')
 
     def model_preds(self):
+        pass
 
 
 
