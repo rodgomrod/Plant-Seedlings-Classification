@@ -78,7 +78,7 @@ class Model(object):
 
     def load_m(self, model_n):
         model_l = load_model('models/{}.h5'.format(model_n))
-        model_l.load_weights('weights/{}.h5'.format(model_n))
+        # model_l.load_weights('weights/{}.h5'.format(model_n))
         return model_l
 
     def submit(self, model, data, sub_name, df_test):
@@ -194,66 +194,67 @@ if __name__ == '__main__':
 
     y_one_hot = mod.label_binarizer.fit_transform(y_train)
     y_one_hot_test = mod.label_binarizer.fit_transform(y_test)
-
-
-    model = Sequential()
-    model.add(Convolution2D(16, 4, 4, input_shape=(32, 32, 3), activation="relu"))
-    model.add(MaxPooling2D((2, 2)))
-    model.add(Dropout(0.2))
-    model.add(Convolution2D(32, 4, 4, activation="relu"))
-    model.add(MaxPooling2D((2, 2)))
-    model.add(Dropout(0.2))
-    # model.add(Convolution2D(128, 4, 4, activation="relu"))
+    #
+    #
+    # model = Sequential()
+    # model.add(Convolution2D(16, 4, 4, input_shape=(32, 32, 3), activation="relu"))
     # model.add(MaxPooling2D((2, 2)))
     # model.add(Dropout(0.2))
-    model.add(Flatten())
-    model.add(Dense(256, activation="relu"))
-    model.add(Dropout(0.25))
-    model.add(Dense(12, activation="softmax"))
-
-    BATCH_SIZE = 8
-    EPOCHS = 30
-    model.compile('adam', 'categorical_crossentropy', ['accuracy'])
-    gen = ImageDataGenerator(
-        rotation_range=360.,
-        width_shift_range=0.3,
-        height_shift_range=0.3,
-        zoom_range=0,
-        horizontal_flip=True,
-        vertical_flip=True
-    )
-    # model.fit_generator(gen.flow(X_normalized, y_one_hot, batch_size=BATCH_SIZE),
-    #                     steps_per_epoch=250,
-    #                     epochs=EPOCHS,
+    # model.add(Convolution2D(32, 4, 4, activation="relu"))
+    # model.add(MaxPooling2D((2, 2)))
+    # model.add(Dropout(0.2))
+    # # model.add(Convolution2D(128, 4, 4, activation="relu"))
+    # # model.add(MaxPooling2D((2, 2)))
+    # # model.add(Dropout(0.2))
+    # model.add(Flatten())
+    # model.add(Dense(256, activation="relu"))
+    # model.add(Dropout(0.25))
+    # model.add(Dense(12, activation="softmax"))
+    #
+    # BATCH_SIZE = 8
+    # EPOCHS = 30
+    # model.compile('adam', 'categorical_crossentropy', ['accuracy'])
+    # gen = ImageDataGenerator(
+    #     rotation_range=360.,
+    #     width_shift_range=0.3,
+    #     height_shift_range=0.3,
+    #     zoom_range=0,
+    #     horizontal_flip=True,
+    #     vertical_flip=True
+    # )
+    # # model.fit_generator(gen.flow(X_normalized, y_one_hot, batch_size=BATCH_SIZE),
+    # #                     steps_per_epoch=250,
+    # #                     epochs=EPOCHS,
+    # #                     verbose=1,
+    # #                     # shuffle=True,
+    # #                     validation_data=(X_normalized_test, y_one_hot_test))
+    #
+    # earlyStopping = keras.callbacks.EarlyStopping(monitor='acc', patience=4, verbose=1, mode='auto')
+    #
+    # history = model.fit(X_normalized,
+    #                     y_one_hot,
+    #                     # steps_per_epoch=100,
+    #                     epochs=80,
     #                     verbose=1,
-    #                     # shuffle=True,
-    #                     validation_data=(X_normalized_test, y_one_hot_test))
+    #                     callbacks=[earlyStopping],
+    #                     batch_size=BATCH_SIZE
+    #                     )
+    #
+    # preds = model.predict(X_normalized_test)
+    # predictions = mod.label_binarizer.inverse_transform(preds)
+    # f1_s = round(f1_score(y_test, predictions, average='micro'), 4)
+    #
+    # model_name = 'modelo_{}'.format(str(f1_s))
+    # model.save_weights('weights/{}.h5'.format(model_name))
+    # model.save('models/{}.h5'.format(model_name))
 
-    earlyStopping = keras.callbacks.EarlyStopping(monitor='acc', patience=4, verbose=1, mode='auto')
-
-    history = model.fit(X_normalized,
-                        y_one_hot,
-                        # steps_per_epoch=100,
-                        epochs=80,
-                        verbose=1,
-                        callbacks=[earlyStopping],
-                        batch_size=BATCH_SIZE
-                        )
-
-    preds = model.predict(X_normalized_test)
-    predictions = mod.label_binarizer.inverse_transform(preds)
-    f1_s = round(f1_score(y_test, predictions, average='micro'), 4)
-
-    model_name = 'modelo_{}'.format(str(f1_s))
-    model.save_weights('weights/{}.h5'.format(model_name))
-    model.save('models/{}.h5'.format(model_name))
-
+    model_name = 'modelo_0.8063'
     model_load = load_model('models/{}.h5'.format(model_name))
-    model_load.load_weights('weights/{}.h5'.format(model_name))
+    # model_load.load_weights('weights/{}.h5'.format(model_name))
     test_score = model_load.evaluate(X_normalized_test, y_one_hot_test)
     print(test_score)
 
-    mod.submit(model_load, test_normalized, 'f1s_{}.csv'.format(str(f1_s)), df_test)
+    # mod.submit(model_load, test_normalized, 'f1s_{}.csv'.format(str(f1_s)), df_test)
 
 
 
