@@ -76,7 +76,7 @@ class Model(object):
 
         return TEST_FOLDER_ALL
 
-    def load_m(model_n):
+    def load_m(self, model_n):
         model_l = load_model('models/{}.h5'.format(model_n))
         model_l.load_weights('weights/{}.h5'.format(model_n))
         return model_l
@@ -199,31 +199,31 @@ if __name__ == '__main__':
     model = Sequential()
     model.add(Convolution2D(16, 4, 4, input_shape=(32, 32, 3), activation="relu"))
     model.add(MaxPooling2D((2, 2)))
-    # model.add(Dropout(0.25))
+    model.add(Dropout(0.2))
     model.add(Convolution2D(32, 4, 4, activation="relu"))
     model.add(MaxPooling2D((2, 2)))
-    # model.add(Dropout(0.5))
+    model.add(Dropout(0.2))
     # model.add(Convolution2D(128, 4, 4, activation="relu"))
     # model.add(MaxPooling2D((2, 2)))
-    # model.add(Dropout(0.5))
+    # model.add(Dropout(0.2))
     model.add(Flatten())
     model.add(Dense(256, activation="relu"))
-    # model.add(Dropout(0.25))
+    model.add(Dropout(0.25))
     model.add(Dense(12, activation="softmax"))
 
-    BATCH_SIZE = 16
-    EPOCHS = 10
+    BATCH_SIZE = 8
+    EPOCHS = 30
     model.compile('adam', 'categorical_crossentropy', ['accuracy'])
     gen = ImageDataGenerator(
         rotation_range=360.,
-        width_shift_range=0.2,
-        height_shift_range=0.2,
+        width_shift_range=0.3,
+        height_shift_range=0.3,
         zoom_range=0,
         horizontal_flip=True,
         vertical_flip=True
     )
     model.fit_generator(gen.flow(X_normalized, y_one_hot, batch_size=BATCH_SIZE),
-                        steps_per_epoch=10,
+                        steps_per_epoch=250,
                         epochs=EPOCHS,
                         verbose=1,
                         shuffle=True,
@@ -233,8 +233,8 @@ if __name__ == '__main__':
 
     history = model.fit(X_normalized,
                         y_one_hot,
-                        steps_per_epoch=10,
-                        epochs=2,
+                        steps_per_epoch=100,
+                        epochs=80,
                         verbose=1,
                         callbacks=[earlyStopping],
                         )
