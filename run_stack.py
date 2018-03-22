@@ -1,27 +1,3 @@
-import numpy as np
-import os
-import math
-import pandas as pd
-import matplotlib.pyplot as plt
-from scipy import misc
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelBinarizer
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import f1_score
-from matplotlib.pyplot import imshow
-from PIL import Image
-# from __future__ import print_function
-from sklearn.utils import shuffle
-import cv2
-import h5py
-from keras.models import Sequential
-from keras.layers.core import Dense, Activation, Flatten, Dropout
-from keras.layers.convolutional import Convolution2D
-from keras.layers.pooling import MaxPooling2D
-import keras
-from keras.models import load_model
-from keras.preprocessing.image import ImageDataGenerator
-import tensorflow as tf
 from sklearn.model_selection  import GridSearchCV
 from run import *
 from xgboost import XGBClassifier
@@ -45,6 +21,10 @@ class stack_nn(object):
         self.m6 = self.rfuncs.load_m('modelo_0.8695')
         self.m7 = self.rfuncs.load_m('modelo_0.8063')
         self.m8 = self.rfuncs.load_m('modelo_0.8032')
+        self.m9 = self.rfuncs.load_m('modelo_0.8695')
+        self.m10 = self.rfuncs.load_m('modelo_0.7874')
+        self.m11 = self.rfuncs.load_m('modelo_0.7832')
+
 
 
         self.label_binarizer = LabelBinarizer()
@@ -102,6 +82,9 @@ if __name__ == '__main__':
     m6_preds = stacking.model_preds(stacking.m6, stacking.X_normalized)
     m7_preds = stacking.model_preds(stacking.m7, stacking.X_normalized)
     m8_preds = stacking.model_preds(stacking.m8, stacking.X_normalized)
+    m9_preds = stacking.model_preds(stacking.m9, stacking.X_normalized)
+    m10_preds = stacking.model_preds(stacking.m10, stacking.X_normalized)
+    # m11_preds = stacking.model_preds(stacking.m11, stacking.X_normalized)
 
     print('converting predictions to pandas DF')
     full_preds = {"m1": m1_preds,
@@ -112,6 +95,9 @@ if __name__ == '__main__':
                   "m6": m6_preds,
                   "m7": m7_preds,
                   "m8": m8_preds,
+                  "m9": m9_preds,
+                  "m10": m10_preds,
+                  # "m11": m11_preds,
                   "Y": stacking.df_train['label']
                   }
 
@@ -174,17 +160,14 @@ if __name__ == '__main__':
              # 'n_jobs': -1,
              "learning_rate": 0.05,
              "max_depth": 20,
-             "n_estimators": 600,
-             'subsample': 0.8,
-             "colsample_bytree": 0.6,
-             "colsample_bylevel": 0.7,
+             "n_estimators": 800,
+             'subsample': 0.6,
+             "colsample_bytree": 1,
+             "colsample_bylevel": 1,
+             'gamma': 0.2,
              }
 
-    # Convert input data from numpy to XGBoost format
-    dtrain = xgb.DMatrix(X_train, label=y_train)
-    dtest = xgb.DMatrix(X_test, label=y_test)
-
-    gpu_res = {}  # Store accuracy result
+    # gpu_res = {}  # Store accuracy result
     tmp = time.time()
     # Train model
     xgboost_model = XGBClassifier(**param)
@@ -212,15 +195,21 @@ if __name__ == '__main__':
     m6_preds_test = stacking.model_preds(stacking.m6, stacking.test_normalized)
     m7_preds_test = stacking.model_preds(stacking.m7, stacking.test_normalized)
     m8_preds_test = stacking.model_preds(stacking.m8, stacking.test_normalized)
+    m9_preds_test = stacking.model_preds(stacking.m9, stacking.test_normalized)
+    m10_preds_test = stacking.model_preds(stacking.m10, stacking.test_normalized)
+    # m11_preds_test = stacking.model_preds(stacking.m11, stacking.test_normalized)
 
     print('converting predictions tests to pandas DF')
     full_preds_test = {"m1": m1_preds_test,
-                  "m2": m2_preds_test,
-                  "m3": m3_preds_test,
-                  "m5": m5_preds_test,
-                  "m6": m6_preds_test,
-                  "m7": m7_preds_test,
-                  "m8": m8_preds_test,
+                      "m2": m2_preds_test,
+                      "m3": m3_preds_test,
+                      "m5": m5_preds_test,
+                      "m6": m6_preds_test,
+                      "m7": m7_preds_test,
+                      "m8": m8_preds_test,
+                       "m9": m9_preds_test,
+                       "m10": m10_preds_test,
+                       # "m11": m11_preds_test,
                   }
 
 
