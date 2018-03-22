@@ -69,7 +69,7 @@ class stack_nn(object):
         return predictions
 
     def submit_stack(self, model, data, sub_name):
-        df_test = pd.read_csv('data/df_data/train.csv')
+        df_test = pd.read_csv('data/df_data/test.csv')
         path_test = [df_test['path'][i].split('/')[-1] for i in range(len(self.df_test['path']))]
         pr1 = model.predict(data)
         names_pr = [self.rfuncs.number_to_names[str(i)] for i in pr1]
